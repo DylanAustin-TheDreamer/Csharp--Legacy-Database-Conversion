@@ -1,4 +1,16 @@
+using System.Runtime.CompilerServices;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 public class Departments
 {
-    
+    [Key]
+    public string? DepartmentCode { get; set; }
+    public string? DepartmentName { get; set; }
+    public decimal BudgetAmount { get; set; }
+    public bool IsActive { get; set; }
+
+    // need to reference the employee number
+    [ForeignKey (nameof(DepartmentManagerNum))]
+    public int DepartmentManagerNum { get; set; }
 }
