@@ -5,7 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Departments
 {
     [Key]
+    [StringLength(10)]
     public string? DepartmentCode { get; set; }
+    [StringLength(100)]
     public string? DepartmentName { get; set; }
     public decimal BudgetAmount { get; set; }
     public bool IsActive { get; set; }

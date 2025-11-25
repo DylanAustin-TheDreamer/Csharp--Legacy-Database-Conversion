@@ -3,6 +3,9 @@ using System.Runtime.CompilerServices;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+// we use [StringLength(num)] to specify the size for the database columns. if not in SQL we will get VARCHAR(MAX) which isn't necessary
+// it would also impose performance issues
+// we don't need to do that for other variable types - only strings in regards to database collumns
 public class EmployeeData
 {
     [Required]
@@ -30,6 +33,7 @@ public class EmployeeData
     public string? Email { get; set; }
     [StringLength(16)] // Max length
     public string? PhoneNum { get; set; }
+    [StringLength(200)] // Max length
     public string? CreatedBy { get; set; }
     public DateTime CreatedAt { get; set; }
     [StringLength(200)] // Max length
