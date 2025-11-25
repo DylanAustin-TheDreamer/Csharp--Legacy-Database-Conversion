@@ -11,6 +11,7 @@ public class Departments
     public bool IsActive { get; set; }
 
     // need to reference the employee number
-    [ForeignKey (nameof(DepartmentManagerNum))]
     public int DepartmentManagerNum { get; set; }
+    [ForeignKey ("DepartmentManagerNum")]
+    public EmployeeData? Manager { get; set; }
 }

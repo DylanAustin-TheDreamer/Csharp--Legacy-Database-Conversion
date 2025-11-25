@@ -4,16 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class ProjectAssignTable
 {
+    [Required]
     [Key]
-    public int assignId { get; set; }
+    public int AssignId { get; set; }
 
-    [ForeignKey (nameof(employeeNum))]
-    public int employeeNum { get; set; }
-    public EmployeeData? employeeData { get; set; }
-    public string? projectCode { get; set; }
-    public DateTime startDate { get; set; }
-    public DateTime endDate { get; set; }
-    public int hrsPerWeek { get; set; }
-    public decimal billRate { get; set; }
-    public string? notes { get; set; }
+    // Get employee Id
+    public int EmployeeNum { get; set; }
+    [ForeignKey ("EmployeeNum")]
+    public EmployeeData? Employee { get; set; }
+    public string? ProjectCode { get; set; }
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public int HrsPerWeek { get; set; }
+    public decimal BillRate { get; set; }
+    public string? Notes { get; set; }
 }
