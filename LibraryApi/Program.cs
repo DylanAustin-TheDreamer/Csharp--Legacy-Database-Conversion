@@ -8,6 +8,9 @@ builder.Services.AddDbContext<NewDbContext>(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// this for scanning controller classes
+builder.Services.AddControllers();
+LegacyDatabaseBuilder.CreateLegacyDatabase();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -17,4 +20,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// map the http routes to the controllers
+app.MapControllers();
 app.Run();
