@@ -49,10 +49,10 @@ Build a **C# ASP.NET Core API** that:
 - [x] Handle errors gracefully
 
 ### Phase 3: Legacy Integration 🔥
-- [ ] Read data from the legacy database
-- [ ] Transform messy legacy data into clean modern format
+- [x] Read data from the legacy database
+- [x] Transform messy legacy data into clean modern format
 - [ ] Handle data inconsistencies and errors
-- [ ] Validate and clean data before storing
+- [x] Validate and clean data before storing
 
 ### Phase 4: Business Logic 💼
 - [ ] Calculate derived fields (e.g., years of service)
