@@ -36,3 +36,6 @@ public class EmployeesController : ControllerBase
         return employee;
     }
 }
+
+// do cd LibraryApi;   to get to the project folder before running run commands
+// to run use - dotnet run
