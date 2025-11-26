@@ -51,6 +51,17 @@ public class LegacyDataImporter
             var parts = fullName?.Split(",");
             var firstName = parts?[0];
             var lastName = parts?[1];
+            // parsing strings and converting to datetime
+            DateTime hireDateResult;
+            bool success = DateTime.TryParse(hireDateStr, out hireDateResult);
+            if (success)
+            {
+                // successful parse - the result is hireDataResult
+            }
+            else
+            {
+                // handle default datetime to some form of null
+            }
     
             // Then parse and create EmployeeData object
             var employee = new EmployeeData
@@ -58,6 +69,7 @@ public class LegacyDataImporter
                 // here I call the variables outside of this new object that have one part of the split array called parts
                 FirstName = firstName,
                 LastName = lastName,
+                HireDate = hireDateResult,
             };
         }
         // 4. SaveChanges
