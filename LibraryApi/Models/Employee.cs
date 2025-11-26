@@ -22,7 +22,7 @@ public class EmployeeData
     [ForeignKey("DepartmentCode")]  // ← Name of FK property
     public Departments? Department { get; set; }
 
-    public DateTime HireDate { get; set; }
+    public DateTime? HireDate { get; set; }
     public decimal? Salary { get; set; }
     public bool StatusFlag {get; set; }
 
@@ -35,8 +35,8 @@ public class EmployeeData
     public string? PhoneNum { get; set; }
     [StringLength(200)] // Max length
     public string? CreatedBy { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
     [StringLength(200)] // Max length
     public string? ModifiedBy { get; set; }
-    public DateTime ModifiedAt { get; set; }
+    public DateTime? ModifiedAt { get; set; }
 }

@@ -48,7 +48,7 @@ namespace LibraryApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CreatedBy")
@@ -67,7 +67,7 @@ namespace LibraryApi.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("HireDate")
+                    b.Property<DateTime?>("HireDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
@@ -77,7 +77,7 @@ namespace LibraryApi.Migrations
                     b.Property<int?>("ManagerNum")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("ModifiedAt")
+                    b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModifiedBy")

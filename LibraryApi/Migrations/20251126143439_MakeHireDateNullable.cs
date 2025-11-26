@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LibraryApi.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class MakeHireDateNullable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,16 +35,16 @@ namespace LibraryApi.Migrations
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
                     DepartmentCode = table.Column<string>(type: "TEXT", maxLength: 10, nullable: true),
-                    HireDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    HireDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Salary = table.Column<decimal>(type: "TEXT", nullable: true),
                     StatusFlag = table.Column<bool>(type: "INTEGER", nullable: false),
                     ManagerNum = table.Column<int>(type: "INTEGER", nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
                     PhoneNum = table.Column<string>(type: "TEXT", maxLength: 16, nullable: true),
                     CreatedBy = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ModifiedBy = table.Column<string>(type: "TEXT", maxLength: 200, nullable: true),
-                    ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ModifiedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

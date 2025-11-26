@@ -53,11 +53,23 @@ public class LegacyDataImporter
             // this code skips the first element in the array and joins all other elements - giving us the first and middle name scenario
             var firstName = (parts != null && parts.Length > 1) ? string.Join(" ", parts.Skip(1)).Trim() : "";
             // parsing strings and converting to datetime
-            DateTime hireDateResult;
+            DateTime? hireDateResult = null;
+            DateTime tryDateResult;
             DateTime createdOnResult;
             DateTime modifiedOnResult;
-            
-            bool hireDateSuccess = DateTime.TryParse(hireDateStr, out hireDateResult);
+
+
+            // this is to handle the easter egg mission where an employee has literally - invalid date - as their start date
+            // had to run some re migrations and updates for the database to incorporate null for the startdate DateTime field
+            bool hireDateSuccess = DateTime.TryParse(hireDateStr, out tryDateResult);
+            if (hireDateSuccess)
+            {
+                hireDateResult = tryDateResult;
+            }
+            else
+            {
+                hireDateResult = null; 
+            }
             bool createdSuccess = DateTime.TryParse(createdOn, out createdOnResult);
             bool modifiedSuccess = DateTime.TryParse(modifiedOn, out modifiedOnResult);
     
