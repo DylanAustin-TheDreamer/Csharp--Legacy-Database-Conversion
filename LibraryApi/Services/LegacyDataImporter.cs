@@ -1,7 +1,4 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Routing.Template;
 
 public class LegacyDataImporter
 {
@@ -51,8 +48,10 @@ public class LegacyDataImporter
             // changed these to nullable to take away yellow warning
             // Here I get full name and split by comma - then create first name and last name
             var parts = fullName?.Split(",");
-            var firstName = (parts != null && parts.Length > 1) ? parts[1].Trim() : "";
+            // here I am handling a middle name scenario and I am just adding any other middle names to first name
             var lastName = (parts != null && parts.Length > 0) ? parts[0].Trim() : "";
+            // this code skips the first element in the array and joins all other elements - giving us the first and middle name scenario
+            var firstName = (parts != null && parts.Length > 1) ? string.Join(" ", parts.Skip(1)).Trim() : "";
             // parsing strings and converting to datetime
             DateTime hireDateResult;
             DateTime createdOnResult;
@@ -75,6 +74,8 @@ public class LegacyDataImporter
             {
                 salaryResult = null;
             }
+            int numResult;
+            var manager = int.TryParse(managerNum, out numResult);
 
             // made a mistake when creating the status field in my model - going to try and salvage the situation (srry)
             // my plan is do detect the code and save either true or false.
@@ -88,6 +89,7 @@ public class LegacyDataImporter
                 LastName = lastName,
                 DepartmentCode = deptCode,
                 Salary = salaryResult,
+                ManagerNum = numResult,
                 PhoneNum = phoneNumber,
                 Email = emailAddress,
                 CreatedBy = createdBy,
