@@ -51,8 +51,8 @@ public class LegacyDataImporter
             // changed these to nullable to take away yellow warning
             // Here I get full name and split by comma - then create first name and last name
             var parts = fullName?.Split(",");
-            var firstName = parts?[1];
-            var lastName = parts?[0];
+            var firstName = (parts != null && parts.Length > 1) ? parts[1].Trim() : "";
+            var lastName = (parts != null && parts.Length > 0) ? parts[0].Trim() : "";
             // parsing strings and converting to datetime
             DateTime hireDateResult;
             DateTime createdOnResult;
@@ -79,15 +79,7 @@ public class LegacyDataImporter
             // made a mistake when creating the status field in my model - going to try and salvage the situation (srry)
             // my plan is do detect the code and save either true or false.
             // my thinking at the time when I was confused was to create a bool to say if they were active or not - tried to keep things simple.
-            bool status = false;
-            if(statusFlag == "A")
-            {
-                status = true;
-            }
-            else
-            {
-                status = false;
-            }
+            bool status = statusFlag == "A";
             // the new model
             var employee = new EmployeeData
             {
