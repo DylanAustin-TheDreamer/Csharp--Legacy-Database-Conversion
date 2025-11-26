@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.Sqlite;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Routing.Template;
 
 public class LegacyDataImporter
 {
@@ -49,46 +51,65 @@ public class LegacyDataImporter
             // changed these to nullable to take away yellow warning
             // Here I get full name and split by comma - then create first name and last name
             var parts = fullName?.Split(",");
-            var firstName = parts?[0];
-            var lastName = parts?[1];
+            var firstName = parts?[1];
+            var lastName = parts?[0];
             // parsing strings and converting to datetime
             DateTime hireDateResult;
-            bool success = DateTime.TryParse(hireDateStr, out hireDateResult);
-            if (success)
+            DateTime createdOnResult;
+            DateTime modifiedOnResult;
+            
+            bool hireDateSuccess = DateTime.TryParse(hireDateStr, out hireDateResult);
+            bool createdSuccess = DateTime.TryParse(createdOn, out createdOnResult);
+            bool modifiedSuccess = DateTime.TryParse(modifiedOn, out modifiedOnResult);
+    
+            // parsing to integers and decimals
+            decimal? salaryResult = null;
+            decimal tempResult = 0;
+            var salary = decimal.TryParse(salaryStr, out tempResult);
+            if(salary)
             {
-                // successful parse - the result is hireDataResult
+                // parsing success
+                salaryResult = tempResult;
             }
             else
             {
-                // handle default datetime to some form of null
+                salaryResult = null;
             }
-    
-            // Then parse and create EmployeeData object
+
+            // made a mistake when creating the status field in my model - going to try and salvage the situation (srry)
+            // my plan is do detect the code and save either true or false.
+            // my thinking at the time when I was confused was to create a bool to say if they were active or not - tried to keep things simple.
+            bool status = false;
+            if(statusFlag == "A")
+            {
+                status = true;
+            }
+            else
+            {
+                status = false;
+            }
+            // the new model
             var employee = new EmployeeData
             {
                 // here I call the variables outside of this new object that have one part of the split array called parts
                 FirstName = firstName,
                 LastName = lastName,
+                DepartmentCode = deptCode,
+                Salary = salaryResult,
+                PhoneNum = phoneNumber,
+                Email = emailAddress,
+                CreatedBy = createdBy,
+                ModifiedBy = modifiedBy,
+                StatusFlag = status,
+
+                // Dates
                 HireDate = hireDateResult,
+                CreatedAt = createdOnResult,
+                ModifiedAt = modifiedOnResult,
             };
+            _cleanContext.Employees.Add(employee);
         }
         // 4. SaveChanges
         await _cleanContext.SaveChangesAsync();
     }
-    
-    private DateTime? ParseLegacyDate(string messyDate)
-    {
-        // Handle "01/15/2003", "2008-06-10", "Invalid Date"
-        // TODO: Implement parsing logic
-        return null; // Placeholder
-    }
-    
-    private decimal? ParseLegacySalary(string messySalary)
-    {
-        // Handle "$95,000.00", "85000", "N/A"
-        // TODO: Implement parsing logic
-        return null; // Placeholder
-    }
-    
-    // etc...
 }
