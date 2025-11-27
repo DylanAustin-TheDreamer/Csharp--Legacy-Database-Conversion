@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 
 public class LegacyDataImporter
