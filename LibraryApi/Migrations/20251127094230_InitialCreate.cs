@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LibraryApi.Migrations
 {
     /// <inheritdoc />
-    public partial class MakeHireDateNullable : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,9 +17,9 @@ namespace LibraryApi.Migrations
                 {
                     DepartmentCode = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     DepartmentName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    BudgetAmount = table.Column<decimal>(type: "TEXT", nullable: false),
+                    BudgetAmount = table.Column<decimal>(type: "TEXT", nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DepartmentManagerNum = table.Column<int>(type: "INTEGER", nullable: false)
+                    DepartmentManagerNum = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -65,14 +65,13 @@ namespace LibraryApi.Migrations
                 name: "ProjectAssignments",
                 columns: table => new
                 {
-                    AssignId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    EmployeeNum = table.Column<int>(type: "INTEGER", nullable: false),
+                    AssignId = table.Column<string>(type: "TEXT", nullable: false),
+                    EmployeeNum = table.Column<int>(type: "INTEGER", nullable: true),
                     ProjectCode = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
-                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    HrsPerWeek = table.Column<int>(type: "INTEGER", nullable: false),
-                    BillRate = table.Column<decimal>(type: "TEXT", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    HrsPerWeek = table.Column<int>(type: "INTEGER", nullable: true),
+                    BillRate = table.Column<decimal>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -82,8 +81,7 @@ namespace LibraryApi.Migrations
                         name: "FK_ProjectAssignments_Employees_EmployeeNum",
                         column: x => x.EmployeeNum,
                         principalTable: "Employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -111,8 +109,7 @@ namespace LibraryApi.Migrations
                 table: "Departments",
                 column: "DepartmentManagerNum",
                 principalTable: "Employees",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />

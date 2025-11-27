@@ -105,20 +105,19 @@ namespace LibraryApi.Migrations
 
             modelBuilder.Entity("ProjectAssignTable", b =>
                 {
-                    b.Property<int>("AssignId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("BillRate")
+                    b.Property<string>("AssignId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("EmployeeNum")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndDate")
+                    b.Property<decimal?>("BillRate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("HrsPerWeek")
+                    b.Property<int?>("EmployeeNum")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("HrsPerWeek")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Notes")
@@ -128,7 +127,7 @@ namespace LibraryApi.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("AssignId");
@@ -166,9 +165,7 @@ namespace LibraryApi.Migrations
                 {
                     b.HasOne("EmployeeData", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeNum")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmployeeNum");
 
                     b.Navigation("Employee");
                 });

@@ -189,6 +189,42 @@ public class LegacyDataImporter
     // we do the same again - parsing info from projects now
     public async Task ImportProjects()
     {
-        
+        // create the connection to legacy
+        var connectionString = "Data Source=../LegacyDatabase/legacy.db";
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        // use SQL to get the department information from legacy
+        var sql = "SELECT * FROM PROJ_ASSIGN_TBL";
+        using var command = connection.CreateCommand();
+        command.CommandText = sql;
+
+        // 2. Read messy data
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            var assingId = reader["ASSIGN_ID"].ToString();
+            var employeeNum = reader["EMP_NUM"].ToString();
+            var projectCode = reader["PROJ_CD"].ToString();
+            var startDate = reader["START_DT"].ToString();
+            var endDate = reader["END_DT"].ToString();
+            var hrsPerWeek = reader["HOURS_PER_WK"].ToString();
+            var billRate = reader["BILL_RATE"].ToString();
+            var notes = reader["NOTES_TEXT"].ToString();
+            
+            // do info parse and format
+            
+
+            var projects = new ProjectAssignTable
+            {
+                // DepartmentCode = departmentCode,
+                // DepartmentName = departmentName,
+                // DepartmentManagerNum = numResult,
+                // BudgetAmount = amountResult,
+                // IsActive = isActive
+            };
+            _cleanContext.ProjectAssignments.Add(projects); 
+        }
+        await _cleanContext.SaveChangesAsync();
     }
 }

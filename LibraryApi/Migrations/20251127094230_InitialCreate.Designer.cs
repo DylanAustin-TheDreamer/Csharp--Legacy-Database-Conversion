@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryApi.Migrations
 {
     [DbContext(typeof(NewDbContext))]
-    [Migration("20251126143439_MakeHireDateNullable")]
-    partial class MakeHireDateNullable
+    [Migration("20251127094230_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,10 +25,10 @@ namespace LibraryApi.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("BudgetAmount")
+                    b.Property<decimal?>("BudgetAmount")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DepartmentManagerNum")
+                    b.Property<int?>("DepartmentManagerNum")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("DepartmentName")
@@ -108,20 +108,19 @@ namespace LibraryApi.Migrations
 
             modelBuilder.Entity("ProjectAssignTable", b =>
                 {
-                    b.Property<int>("AssignId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("BillRate")
+                    b.Property<string>("AssignId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("EmployeeNum")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndDate")
+                    b.Property<decimal?>("BillRate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("HrsPerWeek")
+                    b.Property<int?>("EmployeeNum")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("HrsPerWeek")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Notes")
@@ -131,7 +130,7 @@ namespace LibraryApi.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("AssignId");
@@ -145,9 +144,7 @@ namespace LibraryApi.Migrations
                 {
                     b.HasOne("EmployeeData", "Manager")
                         .WithMany()
-                        .HasForeignKey("DepartmentManagerNum")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DepartmentManagerNum");
 
                     b.Navigation("Manager");
                 });
@@ -171,9 +168,7 @@ namespace LibraryApi.Migrations
                 {
                     b.HasOne("EmployeeData", "Employee")
                         .WithMany()
-                        .HasForeignKey("EmployeeNum")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmployeeNum");
 
                     b.Navigation("Employee");
                 });
