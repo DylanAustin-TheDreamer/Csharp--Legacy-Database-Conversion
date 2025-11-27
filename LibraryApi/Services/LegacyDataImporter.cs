@@ -74,6 +74,8 @@ public class LegacyDataImporter
             modifiedOnResult = modifiedSuccess ? tryModifiedOn : null;
     
             // parsing to integers and decimals
+            // Lets parse salary string before conversion
+            salaryStr = salaryStr?.Replace("$", "").Replace(",", "");
             decimal? salaryResult = null;
             decimal tempResult = 0;
             var salary = decimal.TryParse(salaryStr, out tempResult);
