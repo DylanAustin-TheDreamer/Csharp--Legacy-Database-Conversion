@@ -74,7 +74,10 @@ public class LegacyDataImporter
             decimal tempResult = 0;
             var salary = decimal.TryParse(salaryStr, out tempResult);
             salaryResult = salary ? tempResult : null;
-            // for managernumber
+            // for employee number
+            int empNumResult;
+            var employeeCheck = int.TryParse(empNum, out empNumResult);
+            // for manager number
             int numResult;
             var manager = int.TryParse(managerNum, out numResult);
 
@@ -94,26 +97,27 @@ public class LegacyDataImporter
                 safeManagerNum = numResult;
             }
             // the new model
-            var employee = new EmployeeData
+            if (!_cleanContext.Employees.Any(e => e.Id == empNumResult))
             {
-                // here I call the variables outside of this new object that have one part of the split array called parts
-                FirstName = firstName,
-                LastName = lastName,
-                DepartmentCode = safeDeptCode,
-                Salary = salaryResult,
-                ManagerNum = safeManagerNum,
-                PhoneNum = phoneNumber,
-                Email = emailAddress,
-                CreatedBy = createdBy,
-                ModifiedBy = modifiedBy,
-                StatusFlag = status,
-
-                // Dates
-                HireDate = hireDateResult,
-                CreatedAt = createdOnResult,
-                ModifiedAt = modifiedOnResult,
-            };
-            _cleanContext.Employees.Add(employee);
+                var employee = new EmployeeData
+                {
+                    Id = empNumResult,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    DepartmentCode = safeDeptCode,
+                    Salary = salaryResult,
+                    ManagerNum = safeManagerNum,
+                    PhoneNum = phoneNumber,
+                    Email = emailAddress,
+                    CreatedBy = createdBy,
+                    ModifiedBy = modifiedBy,
+                    StatusFlag = status,
+                    HireDate = hireDateResult,
+                    CreatedAt = createdOnResult,
+                    ModifiedAt = modifiedOnResult,
+                };
+                _cleanContext.Employees.Add(employee);
+            }
         }
         // 4. SaveChanges
         await _cleanContext.SaveChangesAsync();
@@ -238,18 +242,21 @@ public class LegacyDataImporter
             {
                 safeEmployeeNum = result;
             }
-            var projects = new ProjectAssignTable
+            if (!_cleanContext.ProjectAssignments.Any(p => p.AssignId == assingId))
             {
-                AssignId = assingId,
-                EmployeeNum = safeEmployeeNum,
-                ProjectCode = projectCode,
-                StartDate = start,
-                EndDate = end,
-                HrsPerWeek = hrsResult,
-                BillRate = billResult,
-                Notes = notes
-            };
-            _cleanContext.ProjectAssignments.Add(projects); 
+                var projects = new ProjectAssignTable
+                {
+                    AssignId = assingId,
+                    EmployeeNum = safeEmployeeNum,
+                    ProjectCode = projectCode,
+                    StartDate = start,
+                    EndDate = end,
+                    HrsPerWeek = hrsResult,
+                    BillRate = billResult,
+                    Notes = notes
+                };
+                _cleanContext.ProjectAssignments.Add(projects); 
+            }
         }
         await _cleanContext.SaveChangesAsync();
     }
