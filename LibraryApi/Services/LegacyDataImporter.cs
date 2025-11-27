@@ -30,7 +30,17 @@ public class LegacyDataImporter
         await _cleanContext.SaveChangesAsync();
     }
     
-    public async Task ImportEmployees()
+    public async Task ImportAll()
+    {
+        // Pass 1: Import employees and departments with basic info only
+        await ImportEmployeesBasic();
+        await ImportDepartmentsBasic();
+        // Pass 2: Fix-up relationships
+        await FixupEmployeeDepartmentsAndManagers();
+        await FixupDepartmentManagers();
+    }
+
+    private async Task ImportEmployeesBasic()
     {
         // create the connection to legacy
         var connectionString = "Data Source=../LegacyDatabase/legacy.db";
@@ -175,7 +185,7 @@ public class LegacyDataImporter
                     Id = empNumResult,
                     FirstName = firstName,
                     LastName = lastName,
-                    DepartmentCode = deptCode,
+                    // no manager code or department codes for starters - load order issue
                     Salary = salaryResult,
                     PhoneNum = phoneNumber,
                     Email = emailAddress,
@@ -209,7 +219,7 @@ public class LegacyDataImporter
     }
 
     // we do the same again - parsing info from departments now
-    public async Task ImportDepartments()
+    private async Task ImportDepartmentsBasic()
     {
         // create the connection to legacy
         var connectionString = "Data Source=../LegacyDatabase/legacy.db";
@@ -261,7 +271,7 @@ public class LegacyDataImporter
                 {
                     DepartmentCode = departmentCode,
                     DepartmentName = departmentName,
-                    DepartmentManagerNum = safeManagerNum,
+                    // no assigning manager number - load order issue
                     BudgetAmount = amountResult,
                     IsActive = isActive
                 };
@@ -373,5 +383,82 @@ public class LegacyDataImporter
             }
         }
         await _cleanContext.SaveChangesAsync();
+    }
+
+    // Ai's contribution - things were getting bad due to the load order. I'm too new to grasp it. Things not loading on time and foreign key issues
+    // The models are fine though it is just the load order
+    public async Task FixupEmployeeDepartmentsAndManagers()
+    {
+            // Re-import legacy employee data to set DepartmentCode and ManagerNum
+            var connectionString = "Data Source=../LegacyDatabase/legacy.db";
+            using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            var sql = "SELECT * FROM EMPLOYEE_MASTER_TBL";
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var empNum = reader["EMP_NUM"].ToString();
+                var deptCode = reader["DEPT_CD"].ToString();
+                var managerNum = reader["MGR_EMP_NUM"].ToString();
+                int empNumResult;
+                if (int.TryParse(empNum, out empNumResult))
+                {
+                    var employee = _cleanContext.Employees.FirstOrDefault(e => e.Id == empNumResult);
+                    if (employee != null)
+                    {
+                        // Set DepartmentCode if department exists
+                        if (!string.IsNullOrEmpty(deptCode) && _cleanContext.Departments.Any(d => d.DepartmentCode == deptCode))
+                        {
+                            employee.DepartmentCode = deptCode;
+                        }
+                        else
+                        {
+                            employee.DepartmentCode = null;
+                        }
+                        // Set ManagerNum if manager exists
+                        int managerNumResult;
+                        if (int.TryParse(managerNum, out managerNumResult) && _cleanContext.Employees.Any(e => e.Id == managerNumResult))
+                        {
+                            employee.ManagerNum = managerNumResult;
+                        }
+                        else
+                        {
+                            employee.ManagerNum = null;
+                        }
+                    }
+                }
+            }
+            await _cleanContext.SaveChangesAsync();
+    }
+
+    public async Task FixupDepartmentManagers()
+    {
+            // Re-import legacy department data to set DepartmentManagerNum
+            var connectionString = "Data Source=../LegacyDatabase/legacy.db";
+            using var connection = new SqliteConnection(connectionString);
+            connection.Open();
+            var sql = "SELECT * FROM DEPT_LKP_TBL";
+            using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                var departmentCode = reader["DEPT_CD"].ToString();
+                var departmentManager = reader["DEPT_MGR_EMP"].ToString();
+                int tempManagerNum;
+                int? safeManagerNum = null;
+                if (int.TryParse(departmentManager, out tempManagerNum) && _cleanContext.Employees.Any(e => e.Id == tempManagerNum))
+                {
+                    safeManagerNum = tempManagerNum;
+                }
+                var dept = _cleanContext.Departments.FirstOrDefault(d => d.DepartmentCode == departmentCode);
+                if (dept != null)
+                {
+                    dept.DepartmentManagerNum = safeManagerNum;
+                }
+            }
+            await _cleanContext.SaveChangesAsync();
     }
 }
