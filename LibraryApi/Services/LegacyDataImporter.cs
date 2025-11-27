@@ -59,18 +59,10 @@ public class LegacyDataImporter
             DateTime createdOnResult;
             DateTime modifiedOnResult;
 
-
             // this is to handle the easter egg mission where an employee has literally - invalid date - as their start date
             // had to run some re migrations and updates for the database to incorporate null for the startdate DateTime field
             bool hireDateSuccess = DateTime.TryParse(hireDateStr, out tryDateResult);
-            if (hireDateSuccess)
-            {
-                hireDateResult = tryDateResult;
-            }
-            else
-            {
-                hireDateResult = null; 
-            }
+            hireDateResult = hireDateSuccess ? tryDateResult : null;
             bool createdSuccess = DateTime.TryParse(createdOn, out createdOnResult);
             bool modifiedSuccess = DateTime.TryParse(modifiedOn, out modifiedOnResult);
     
@@ -78,15 +70,8 @@ public class LegacyDataImporter
             decimal? salaryResult = null;
             decimal tempResult = 0;
             var salary = decimal.TryParse(salaryStr, out tempResult);
-            if(salary)
-            {
-                // parsing success
-                salaryResult = tempResult;
-            }
-            else
-            {
-                salaryResult = null;
-            }
+            salaryResult = salary ? tempResult : null;
+            // for managernumber
             int numResult;
             var manager = int.TryParse(managerNum, out numResult);
 
@@ -148,27 +133,13 @@ public class LegacyDataImporter
             int? numResult;
             int tempManagerNum;
             var managerNum = int.TryParse(departmentManager, out tempManagerNum);
-            if (managerNum)
-            {
-                numResult = tempManagerNum;
-            }
-            else
-            {
-                numResult = null;
-            }
+            numResult = managerNum ? tempManagerNum : null;
 
             // budget amount - set as non-nullable
             decimal? amountResult;
             decimal tempAmountResult;
             var salary = decimal.TryParse(budgetAmount, out tempAmountResult);
-            if (salary)
-            {
-                amountResult = tempAmountResult;
-            }
-            else
-            {
-                amountResult = null;
-            }
+            amountResult = salary ? tempAmountResult : null;
 
             // for bool is active
             bool isActive = active == "Y" ? true : false;
@@ -220,26 +191,12 @@ public class LegacyDataImporter
             decimal? hrsResult;
             decimal tempResult;
             bool hrs = decimal.TryParse(hrsPerWeek, out tempResult);
-            if (hrs)
-            {
-                hrsResult = tempResult;
-            }
-            else
-            {
-                hrsResult = null;
-            }
+            hrsResult = hrs ? tempResult : null;
             // for bill rate
             decimal? billResult;
             decimal tempBill;
             bool bill = decimal.TryParse(billRate, out tempBill);
-            if (bill)
-            {
-                billResult = tempBill;
-            }
-            else
-            {
-                billResult = null;
-            }
+            billResult = bill ? tempBill : null;
 
             // for DateTimes
             DateTime? start;
