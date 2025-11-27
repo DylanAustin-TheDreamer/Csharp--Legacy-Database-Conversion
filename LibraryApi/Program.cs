@@ -1,25 +1,33 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddDbContext<NewDbContext>(options =>
     options.UseSqlite("Data Source=LegacyModernized.db"));
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-// this for scanning controller classes
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 LegacyDatabaseBuilder.CreateLegacyDatabase();
+builder.Services.AddTransient<LegacyDataImporter>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-// map the http routes to the controllers
 app.MapControllers();
+
+// Import legacy data before running the app
+using (var scope = app.Services.CreateScope())
+{
+    var importer = scope.ServiceProvider.GetRequiredService<LegacyDataImporter>();
+    importer.ImportEmployees().Wait();
+    importer.ImportDepartments().Wait();
+    importer.ImportProjects().Wait();
+}
+
 app.Run();

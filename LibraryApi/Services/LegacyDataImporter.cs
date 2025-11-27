@@ -82,15 +82,26 @@ public class LegacyDataImporter
             // my plan is do detect the code and save either true or false.
             // my thinking at the time when I was confused was to create a bool to say if they were active or not - tried to keep things simple.
             bool status = statusFlag == "A";
+
+            // Check if DepartmentCode exists in Departments table
+            var validDept = _cleanContext.Departments.Any(d => d.DepartmentCode == deptCode);
+            var safeDeptCode = validDept ? deptCode : null;
+
+            // Check if ManagerNum exists in Employees table
+            int? safeManagerNum = null;
+            if (manager && _cleanContext.Employees.Any(e => e.Id == numResult))
+            {
+                safeManagerNum = numResult;
+            }
             // the new model
             var employee = new EmployeeData
             {
                 // here I call the variables outside of this new object that have one part of the split array called parts
                 FirstName = firstName,
                 LastName = lastName,
-                DepartmentCode = deptCode,
+                DepartmentCode = safeDeptCode,
                 Salary = salaryResult,
-                ManagerNum = numResult,
+                ManagerNum = safeManagerNum,
                 PhoneNum = phoneNumber,
                 Email = emailAddress,
                 CreatedBy = createdBy,
@@ -147,15 +158,26 @@ public class LegacyDataImporter
             // for bool is active
             bool isActive = active == "Y" ? true : false;
 
-            var departments = new Departments
+            // After parsing numResult for manager number
+            int? safeManagerNum = null;
+            if (numResult.HasValue && _cleanContext.Employees.Any(e => e.Id == numResult.Value))
             {
-                DepartmentCode = departmentCode,
-                DepartmentName = departmentName,
-                DepartmentManagerNum = numResult,
-                BudgetAmount = amountResult,
-                IsActive = isActive
-            };
-            _cleanContext.Departments.Add(departments); 
+                safeManagerNum = numResult.Value;
+            }
+
+            // Only add departments with unique DepartmentCode. This will prevent the UNIQUE constraint error.
+            if (!_cleanContext.Departments.Any(d => d.DepartmentCode == departmentCode))
+            {
+                var departments = new Departments
+                {
+                    DepartmentCode = departmentCode,
+                    DepartmentName = departmentName,
+                    DepartmentManagerNum = safeManagerNum,
+                    BudgetAmount = amountResult,
+                    IsActive = isActive
+                };
+                _cleanContext.Departments.Add(departments);
+            }
         }
         // 4. SaveChanges
         await _cleanContext.SaveChangesAsync();
@@ -185,7 +207,7 @@ public class LegacyDataImporter
             var endDate = reader["END_DT"].ToString();
             var hrsPerWeek = reader["HOURS_PER_WK"].ToString();
             var billRate = reader["BILL_RATE"].ToString();
-            var notes = reader["NOTES_TEXT"].ToString();
+            var notes = reader["NOTES"].ToString();
             
             // do info parse and format
             int result;
@@ -211,10 +233,15 @@ public class LegacyDataImporter
             start = stdate ? tempStart : null;
             end = endate ? tempEnd : null;
 
+            int? safeEmployeeNum = null;
+            if (_cleanContext.Employees.Any(e => e.Id == result))
+            {
+                safeEmployeeNum = result;
+            }
             var projects = new ProjectAssignTable
             {
                 AssignId = assingId,
-                EmployeeNum = result,
+                EmployeeNum = safeEmployeeNum,
                 ProjectCode = projectCode,
                 StartDate = start,
                 EndDate = end,
