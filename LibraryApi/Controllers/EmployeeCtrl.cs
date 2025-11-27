@@ -17,7 +17,7 @@ public class EmployeesController : ControllerBase
         _context = context;
     }
 
-    [HttpGet]
+[HttpGet]
 public async Task<ActionResult<IEnumerable<object>>> GetEmployees()
 {
     var employees = await _context.Employees
@@ -47,10 +47,29 @@ public async Task<ActionResult<IEnumerable<object>>> GetEmployees()
 }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<EmployeeData>> GetEmployee(int id)
+    public async Task<ActionResult<object>> GetEmployee(int id)
     {
         var employee = await _context.Employees
-            .Include(e => e.ManagerNum)
+            .Include(e => e.Manager)
+            .Include(e => e.Department)
+            .Select(e => new {
+                e.Id,
+                e.FirstName,
+                e.LastName,
+                e.DepartmentCode,
+                DepartmentName = e.Department != null ? e.Department.DepartmentName : null,
+                e.HireDate,
+                e.StatusFlag,
+                e.Salary,
+                e.ManagerNum,
+                ManagerName = e.Manager != null ? e.Manager.FirstName + e.Manager.LastName : null,
+                e.Email,
+                e.PhoneNum,
+                e.CreatedBy,
+                e.CreatedAt,
+                e.ModifiedBy,
+                e.ModifiedAt
+            })
             .FirstOrDefaultAsync(e => e.Id == id);
     
         if (employee == null)
