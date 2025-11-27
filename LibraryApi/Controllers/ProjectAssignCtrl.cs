@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
 namespace LibraryApi.Controllers;
 
@@ -15,18 +16,44 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProjectAssignTable>>> GetProjects()
+    public async Task<ActionResult<IEnumerable<object>>> GetProjects()
     {
-        return await _context.ProjectAssignments
+        var projects = await _context.ProjectAssignments
             .Include(p => p.Employee) // or .Include(p => p.EmployeeData) if that's your property name
+            .Select(p => new
+            {
+              p.AssignId,
+              p.ProjectCode,
+              p.EmployeeNum,
+              EmployeeName = p.Employee != null ? p.Employee.FirstName + " " + p.Employee.LastName : null,
+              p.HrsPerWeek,
+              p.BillRate,
+              p.StartDate,
+              p.EndDate,
+              p.Notes
+            })
             .ToListAsync();
+
+        return projects;
     }
 
     [HttpGet("{code}")]
-    public async Task<ActionResult<ProjectAssignTable>> GetProject(string code)
+    public async Task<ActionResult<object>> GetProject(string code)
     {
         var project = await _context.ProjectAssignments
             .Include(p => p.Employee) // or .Include(p => p.EmployeeData) if that's your property name
+            .Select(p => new
+            {
+              p.AssignId,
+              p.ProjectCode,
+              p.EmployeeNum,
+              EmployeeName = p.Employee != null ? p.Employee.FirstName + " " + p.Employee.LastName : null,
+              p.HrsPerWeek,
+              p.BillRate,
+              p.StartDate,
+              p.EndDate,
+              p.Notes
+            })
             .FirstOrDefaultAsync(p => p.AssignId == code);
     
         if (project == null)

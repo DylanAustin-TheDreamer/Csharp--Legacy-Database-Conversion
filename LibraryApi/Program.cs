@@ -26,6 +26,18 @@ using (var scope = app.Services.CreateScope())
 {
     var cleanContext = scope.ServiceProvider.GetRequiredService<NewDbContext>();
 
+    // Break circular dependencies before deleting
+    foreach (var emp in cleanContext.Employees)
+    {
+        emp.DepartmentCode = null;
+        emp.ManagerNum = null;
+    }
+    foreach (var dept in cleanContext.Departments)
+    {
+        dept.DepartmentManagerNum = null;
+    }
+    cleanContext.SaveChanges();
+
     // Clear tables before import
     cleanContext.Employees.RemoveRange(cleanContext.Employees);
     cleanContext.Departments.RemoveRange(cleanContext.Departments);
