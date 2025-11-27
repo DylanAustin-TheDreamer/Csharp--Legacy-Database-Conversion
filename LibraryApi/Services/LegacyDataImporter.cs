@@ -56,15 +56,19 @@ public class LegacyDataImporter
             // parsing strings and converting to datetime
             DateTime? hireDateResult = null;
             DateTime tryDateResult;
-            DateTime createdOnResult;
-            DateTime modifiedOnResult;
+            DateTime? createdOnResult;
+            DateTime tryCreatedOn;
+            DateTime? modifiedOnResult;
+            DateTime tryModifiedOn;
 
             // this is to handle the easter egg mission where an employee has literally - invalid date - as their start date
             // had to run some re migrations and updates for the database to incorporate null for the startdate DateTime field
             bool hireDateSuccess = DateTime.TryParse(hireDateStr, out tryDateResult);
             hireDateResult = hireDateSuccess ? tryDateResult : null;
-            bool createdSuccess = DateTime.TryParse(createdOn, out createdOnResult);
-            bool modifiedSuccess = DateTime.TryParse(modifiedOn, out modifiedOnResult);
+            bool createdSuccess = DateTime.TryParse(createdOn, out tryCreatedOn);
+            createdOnResult = createdSuccess ? tryCreatedOn : null;
+            bool modifiedSuccess = DateTime.TryParse(modifiedOn, out tryModifiedOn);
+            modifiedOnResult = modifiedSuccess ? tryModifiedOn : null;
     
             // parsing to integers and decimals
             decimal? salaryResult = null;
