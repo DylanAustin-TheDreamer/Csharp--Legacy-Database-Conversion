@@ -86,9 +86,9 @@ public class LegacyDataImporter
             // my thinking at the time when I was confused was to create a bool to say if they were active or not - tried to keep things simple.
             bool status = statusFlag == "A";
 
-            // Check if DepartmentCode exists in Departments table
-            var validDept = _cleanContext.Departments.Any(d => d.DepartmentCode == deptCode);
-            var safeDeptCode = validDept ? deptCode : null;
+            // // Check if DepartmentCode exists in Departments table
+            // var validDept = _cleanContext.Departments.Any(d => d.DepartmentCode == deptCode);
+            // var safeDeptCode = validDept ? deptCode : null;
 
             // Check if ManagerNum exists in Employees table
             int? safeManagerNum = null;
@@ -104,7 +104,7 @@ public class LegacyDataImporter
                     Id = empNumResult,
                     FirstName = firstName,
                     LastName = lastName,
-                    DepartmentCode = safeDeptCode,
+                    DepartmentCode = deptCode,
                     Salary = salaryResult,
                     ManagerNum = safeManagerNum,
                     PhoneNum = phoneNumber,
@@ -254,6 +254,7 @@ public class LegacyDataImporter
                     HrsPerWeek = hrsResult,
                     BillRate = billResult,
                     Notes = notes
+                    
                 };
                 _cleanContext.ProjectAssignments.Add(projects); 
             }

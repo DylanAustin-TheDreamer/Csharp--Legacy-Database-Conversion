@@ -17,7 +17,9 @@ public class ProjectController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProjectAssignTable>>> GetProjects()
     {
-        return await _context.ProjectAssignments.ToListAsync();
+        return await _context.ProjectAssignments
+            .Include(p => p.Employee) // or .Include(p => p.EmployeeData) if that's your property name
+            .ToListAsync();
     }
 
     [HttpGet("{code}")]

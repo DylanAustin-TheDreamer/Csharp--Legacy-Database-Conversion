@@ -27,14 +27,15 @@ using (var scope = app.Services.CreateScope())
     var cleanContext = scope.ServiceProvider.GetRequiredService<NewDbContext>();
 
     // Clear tables before import
+    
     cleanContext.Employees.RemoveRange(cleanContext.Employees);
     cleanContext.Departments.RemoveRange(cleanContext.Departments);
     cleanContext.ProjectAssignments.RemoveRange(cleanContext.ProjectAssignments);
     cleanContext.SaveChanges();
     
     var importer = scope.ServiceProvider.GetRequiredService<LegacyDataImporter>();
-    importer.ImportEmployees().Wait();
     importer.ImportDepartments().Wait();
+    importer.ImportEmployees().Wait();
     importer.ImportProjects().Wait();
 }
 

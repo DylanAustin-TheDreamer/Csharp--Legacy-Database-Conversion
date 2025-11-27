@@ -17,7 +17,9 @@ public class DepartmentController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Departments>>> GetDepartments()
     {
-        return await _context.Departments.ToListAsync();
+        return await _context.Departments
+            .Include(d => d.Manager) // or .Include(d => d.Manager) if that's your property name
+            .ToListAsync();
     }
 
     [HttpGet("{code}")]

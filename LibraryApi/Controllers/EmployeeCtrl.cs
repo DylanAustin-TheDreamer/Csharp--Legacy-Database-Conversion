@@ -20,7 +20,9 @@ public class EmployeesController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<EmployeeData>>> GetEmployees()
     {
-        return await _context.Employees.ToListAsync();
+        return await _context.Employees
+            .Include(e => e.Manager)
+            .ToListAsync();
     }
 
     [HttpGet("{id}")]
