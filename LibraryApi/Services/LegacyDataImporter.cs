@@ -118,4 +118,77 @@ public class LegacyDataImporter
         // 4. SaveChanges
         await _cleanContext.SaveChangesAsync();
     }
+
+    // we do the same again - parsing info from departments now
+    public async Task ImportDepartments()
+    {
+        // create the connection to legacy
+        var connectionString = "Data Source=../LegacyDatabase/legacy.db";
+        using var connection = new SqliteConnection(connectionString);
+        connection.Open();
+        // use SQL to get the department information from legacy
+        var sql = "SELECT * FROM DEPT_LKP_TBL";
+        using var command = connection.CreateCommand();
+        command.CommandText = sql;
+
+        // 2. Read messy data
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            var departmentCode = reader["DEPT_CD"].ToString();
+            var departmentName = reader["DEPT_NM"].ToString();
+            var departmentManager = reader["DEPT_MGR_EMP"].ToString();
+            var budgetAmount = reader["BUDGET_AMT"].ToString();
+            var active = reader["ACTIVE_YN"].ToString();
+
+            // do info parse and format
+            // this for int parse for the manager number
+            int? numResult;
+            int tempManagerNum;
+            var managerNum = int.TryParse(departmentManager, out tempManagerNum);
+            if (managerNum)
+            {
+                numResult = tempManagerNum;
+            }
+            else
+            {
+                numResult = null;
+            }
+
+            // budget amount - set as non-nullable
+            decimal? amountResult;
+            decimal tempAmountResult;
+            var salary = decimal.TryParse(budgetAmount, out tempAmountResult);
+            if (salary)
+            {
+                amountResult = tempAmountResult;
+            }
+            else
+            {
+                amountResult = null;
+            }
+
+            // for bool is active
+            bool isActive = active == "Y" ? true : false;
+
+            var departments = new Departments
+            {
+                DepartmentCode = departmentCode,
+                DepartmentName = departmentName,
+                DepartmentManagerNum = numResult,
+                BudgetAmount = amountResult,
+                IsActive = isActive
+            };
+            _cleanContext.Departments.Add(departments); 
+        }
+        // 4. SaveChanges
+        await _cleanContext.SaveChangesAsync();
+    }
+    
+    // we do the same again - parsing info from projects now
+    public async Task ImportProjects()
+    {
+        
+    }
 }

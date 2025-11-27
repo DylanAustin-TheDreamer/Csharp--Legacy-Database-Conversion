@@ -9,11 +9,11 @@ public class Departments
     public string? DepartmentCode { get; set; }
     [StringLength(100)]
     public string? DepartmentName { get; set; }
-    public decimal BudgetAmount { get; set; }
+    public decimal? BudgetAmount { get; set; }
     public bool IsActive { get; set; }
 
     // need to reference the employee number
-    public int DepartmentManagerNum { get; set; }
+    public int? DepartmentManagerNum { get; set; }
     [ForeignKey ("DepartmentManagerNum")]
     public EmployeeData? Manager { get; set; }
 }

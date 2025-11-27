@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryApi.Migrations
 {
     [DbContext(typeof(NewDbContext))]
-    partial class NewDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251127092317_MakeDepartmentManagerNumNullable")]
+    partial class MakeDepartmentManagerNumNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -22,7 +25,7 @@ namespace LibraryApi.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal?>("BudgetAmount")
+                    b.Property<decimal>("BudgetAmount")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("DepartmentManagerNum")
