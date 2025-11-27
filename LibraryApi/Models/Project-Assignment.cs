@@ -16,7 +16,7 @@ public class ProjectAssignTable
     public string? ProjectCode { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
-    public int? HrsPerWeek { get; set; }
+    public decimal? HrsPerWeek { get; set; }
     public decimal? BillRate { get; set; }
     // leave this as VARCHAR(MAX)
     public string? Notes { get; set; }

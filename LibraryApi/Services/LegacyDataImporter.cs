@@ -213,15 +213,16 @@ public class LegacyDataImporter
             var notes = reader["NOTES_TEXT"].ToString();
             
             // do info parse and format
-            
+            int result;
+            bool number = int.TryParse(employeeNum, out result);
 
             var projects = new ProjectAssignTable
             {
-                // DepartmentCode = departmentCode,
-                // DepartmentName = departmentName,
-                // DepartmentManagerNum = numResult,
-                // BudgetAmount = amountResult,
-                // IsActive = isActive
+                AssignId = assingId,
+                EmployeeNum = result,
+                ProjectCode = projectCode,
+                
+                
             };
             _cleanContext.ProjectAssignments.Add(projects); 
         }
