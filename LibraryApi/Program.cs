@@ -37,6 +37,7 @@ using (var scope = app.Services.CreateScope())
     importer.ImportDepartments().Wait();
     importer.ImportEmployees().Wait();
     importer.ImportProjects().Wait();
+    importer.CheckDepartmentManager().Wait();
 }
 
 app.Run();

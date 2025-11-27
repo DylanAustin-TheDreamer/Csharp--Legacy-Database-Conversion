@@ -11,11 +11,15 @@ public class NewDbContext : DbContext
     {
     }
 
-    /*
-    Why?
-        Because DbContext (the framework class) needs those options to function. You're just passing them up the chain.
-    */
-    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Departments>()
+            .HasOne(d => d.Manager)
+            .WithMany()
+            .HasForeignKey(d => d.DepartmentManagerNum)
+            .OnDelete(DeleteBehavior.SetNull);
+    }
+
     // A little bit like calling a component in Unity - but we give it a name and it has the get set functionality.
     public DbSet<EmployeeData> Employees { get; set; }
     public DbSet<Departments> Departments { get; set; }

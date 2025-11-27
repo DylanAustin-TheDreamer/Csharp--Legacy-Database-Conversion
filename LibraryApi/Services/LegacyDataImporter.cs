@@ -9,6 +9,26 @@ public class LegacyDataImporter
         _cleanContext = cleanContext;
     }
     
+    public async Task CheckDepartmentManager()
+    {
+        foreach (var dept in _cleanContext.Departments)
+        {
+            if (dept.DepartmentManagerNum.HasValue)
+            {
+                var manager = _cleanContext.Employees.FirstOrDefault(e => e.Id == dept.DepartmentManagerNum.Value);
+                if (manager != null)
+                {
+                    // Manager exists, nothing to do (EF will link via FK)
+                }
+                else
+                {
+                    // Manager does not exist, set to null
+                    dept.DepartmentManagerNum = null;
+                }
+            }
+        }
+        await _cleanContext.SaveChangesAsync();
+    }
     
     public async Task ImportEmployees()
     {
@@ -83,7 +103,7 @@ public class LegacyDataImporter
 
                         // So, the format strings in TryParseExact tell .NET how to interpret the incoming string, but the actual DateTime value 
                         // is always stored in a standard way internally.
-                        
+
                     }
                 }
                 if (hireDateResult == null && DateTime.TryParse(hireDateStr.Trim(), out tempDate))

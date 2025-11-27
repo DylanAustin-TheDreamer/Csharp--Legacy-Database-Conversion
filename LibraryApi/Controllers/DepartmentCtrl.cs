@@ -15,18 +15,38 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Departments>>> GetDepartments()
+    public async Task<ActionResult<IEnumerable<object>>> GetDepartments()
     {
-        return await _context.Departments
+        var departments = await _context.Departments
             .Include(d => d.Manager) // or .Include(d => d.Manager) if that's your property name
+            .Select(d => new
+            {
+               d.DepartmentCode,
+               d.DepartmentName,
+               d.DepartmentManagerNum,
+               ManagerName = d.Manager != null ? d.Manager.FirstName + " " + d.Manager.LastName : null,
+               d.BudgetAmount,
+               d.IsActive
+            })
             .ToListAsync();
+
+        return departments;
     }
 
     [HttpGet("{code}")]
-    public async Task<ActionResult<Departments>> GetDepartment(string code)
+    public async Task<ActionResult<object>> GetDepartment(string code)
     {
         var department = await _context.Departments
             .Include(d => d.Manager) // or .Include(d => d.Manager) if that's your property name
+            .Select(d => new
+            {
+               d.DepartmentCode,
+               d.DepartmentName,
+               d.DepartmentManagerNum,
+               ManagerName = d.Manager != null ? d.Manager.FirstName + " " + d.Manager.LastName : null,
+               d.BudgetAmount,
+               d.IsActive
+            })
             .FirstOrDefaultAsync(d => d.DepartmentCode == code);
     
         if (department == null)
