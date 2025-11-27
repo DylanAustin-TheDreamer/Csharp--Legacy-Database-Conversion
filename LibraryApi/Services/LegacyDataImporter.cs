@@ -57,24 +57,75 @@ public class LegacyDataImporter
             // this code skips the first element in the array and joins all other elements - giving us the first and middle name scenario
             var firstName = (parts != null && parts.Length > 1) ? string.Join(" ", parts.Skip(1)).Trim() : "";
             // parsing strings and converting to datetime
+            string[] formats = { "MM/dd/yyyy", "yyyy-MM-dd", "M/d/yyyy", "dd/MM/yyyy" };
             DateTime? hireDateResult = null;
-            DateTime tryDateResult;
-            DateTime? createdOnResult;
-            DateTime tryCreatedOn;
-            DateTime? modifiedOnResult;
-            DateTime tryModifiedOn;
+            DateTime? createdOnResult = null;
+            DateTime? modifiedOnResult = null;
+            DateTime tempDate;
 
-            // this is to handle the easter egg mission where an employee has literally - invalid date - as their start date
-            // had to run some re migrations and updates for the database to incorporate null for the startdate DateTime field
-            bool hireDateSuccess = DateTime.TryParse(hireDateStr, out tryDateResult);
-            hireDateResult = hireDateSuccess ? tryDateResult : null;
-            bool createdSuccess = DateTime.TryParse(createdOn, out tryCreatedOn);
-            createdOnResult = createdSuccess ? tryCreatedOn : null;
-            bool modifiedSuccess = DateTime.TryParse(modifiedOn, out tryModifiedOn);
-            modifiedOnResult = modifiedSuccess ? tryModifiedOn : null;
+            // I had AI implement the logic here because I got a little brain sore - have pity on me
+            // Not too sure exactly what is happening but I can read over it. It uses the string array created above
+            // bear in mind I have only been learning this as I go along for 3 days or something
+            // Robust date parsing for hireDateStr
+            if (!string.IsNullOrWhiteSpace(hireDateStr))
+            {
+                foreach (var fmt in formats)
+                {
+                    // example: I didn't know TryParseExact and what it does.
+                    // it expects the input to be in year-month-day order. If the input matches, it parses it correctly and stores it as a DateTime object.
+                    if (DateTime.TryParseExact(hireDateStr.Trim(), fmt, null, System.Globalization.DateTimeStyles.None, out tempDate))
+                    {
+                        // Once parsed, the DateTime object itself is not tied to any string format—it’s just a date value. 
+                        // When you display or serialize it, you can choose the format you want (e.g., ISO, UK, US) using .ToString("yyyy-MM-dd") 
+                        // or similar.
+                        hireDateResult = tempDate;
+                        break;
+
+                        // So, the format strings in TryParseExact tell .NET how to interpret the incoming string, but the actual DateTime value 
+                        // is always stored in a standard way internally.
+                        
+                    }
+                }
+                if (hireDateResult == null && DateTime.TryParse(hireDateStr.Trim(), out tempDate))
+                {
+                    hireDateResult = tempDate;
+                }
+            }
+            // Robust date parsing for createdOn
+            if (!string.IsNullOrWhiteSpace(createdOn))
+            {
+                foreach (var fmt in formats)
+                {
+                    if (DateTime.TryParseExact(createdOn.Trim(), fmt, null, System.Globalization.DateTimeStyles.None, out tempDate))
+                    {
+                        createdOnResult = tempDate;
+                        break;
+                    }
+                }
+                if (createdOnResult == null && DateTime.TryParse(createdOn.Trim(), out tempDate))
+                {
+                    createdOnResult = tempDate;
+                }
+            }
+            // Robust date parsing for modifiedOn
+            if (!string.IsNullOrWhiteSpace(modifiedOn))
+            {
+                foreach (var fmt in formats)
+                {
+                    if (DateTime.TryParseExact(modifiedOn.Trim(), fmt, null, System.Globalization.DateTimeStyles.None, out tempDate))
+                    {
+                        modifiedOnResult = tempDate;
+                        break;
+                    }
+                }
+                if (modifiedOnResult == null && DateTime.TryParse(modifiedOn.Trim(), out tempDate))
+                {
+                    modifiedOnResult = tempDate;
+                }
+            }
     
             // parsing to integers and decimals
-            // Lets parse salary string before conversion
+            // Parse salary string before conversion
             salaryStr = salaryStr?.Replace("$", "").Replace(",", "");
             decimal? salaryResult = null;
             decimal tempResult = 0;
@@ -242,14 +293,42 @@ public class LegacyDataImporter
             billResult = bill ? tempBill : null;
 
             // for DateTimes
-            DateTime? start;
-            DateTime? end;
-            DateTime tempStart;
-            DateTime tempEnd;
-            bool stdate = DateTime.TryParse(startDate, out tempStart);
-            bool endate = DateTime.TryParse(endDate, out tempEnd);
-            start = stdate ? tempStart : null;
-            end = endate ? tempEnd : null;
+            string[] formats = { "MM/dd/yyyy", "yyyy-MM-dd", "M/d/yyyy", "dd/MM/yyyy" };
+            DateTime? start = null;
+            DateTime? end = null;
+            DateTime tempDate;
+            // Robust date parsing for startDate
+            if (!string.IsNullOrWhiteSpace(startDate))
+            {
+                foreach (var fmt in formats)
+                {
+                    if (DateTime.TryParseExact(startDate.Trim(), fmt, null, System.Globalization.DateTimeStyles.None, out tempDate))
+                    {
+                        start = tempDate;
+                        break;
+                    }
+                }
+                if (start == null && DateTime.TryParse(startDate.Trim(), out tempDate))
+                {
+                    start = tempDate;
+                }
+            }
+            // Robust date parsing for endDate
+            if (!string.IsNullOrWhiteSpace(endDate))
+            {
+                foreach (var fmt in formats)
+                {
+                    if (DateTime.TryParseExact(endDate.Trim(), fmt, null, System.Globalization.DateTimeStyles.None, out tempDate))
+                    {
+                        end = tempDate;
+                        break;
+                    }
+                }
+                if (end == null && DateTime.TryParse(endDate.Trim(), out tempDate))
+                {
+                    end = tempDate;
+                }
+            }
 
             int? safeEmployeeNum = null;
             if (_cleanContext.Employees.Any(e => e.Id == result))
