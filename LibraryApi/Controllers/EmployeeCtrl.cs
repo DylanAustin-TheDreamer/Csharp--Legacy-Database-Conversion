@@ -18,12 +18,33 @@ public class EmployeesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EmployeeData>>> GetEmployees()
-    {
-        return await _context.Employees
-            .Include(e => e.Manager)
-            .ToListAsync();
-    }
+public async Task<ActionResult<IEnumerable<object>>> GetEmployees()
+{
+    var employees = await _context.Employees
+        .Include(e => e.Manager)
+        .Include(e => e.Department)
+        .Select(e => new {
+            e.Id,
+            e.FirstName,
+            e.LastName,
+            e.DepartmentCode,
+            DepartmentName = e.Department != null ? e.Department.DepartmentName : null,
+            e.HireDate,
+            e.StatusFlag,
+            e.Salary,
+            e.ManagerNum,
+            ManagerName = e.Manager != null ? e.Manager.FirstName + e.Manager.LastName : null,
+            e.Email,
+            e.PhoneNum,
+            e.CreatedBy,
+            e.CreatedAt,
+            e.ModifiedBy,
+            e.ModifiedAt
+        })
+        .ToListAsync();
+
+    return employees;
+}
 
     [HttpGet("{id}")]
     public async Task<ActionResult<EmployeeData>> GetEmployee(int id)
