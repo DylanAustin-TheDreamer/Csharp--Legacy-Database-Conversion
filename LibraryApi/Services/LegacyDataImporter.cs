@@ -28,6 +28,10 @@ public class LegacyDataImporter
         //    - Parse/transform
         //    - Create EmployeeData object
         //    - Add to _cleanContext
+
+        // this is for the second loop to reference
+        var employeeList = new List<(int id, int? managerNum)>();
+
         while(reader.Read())
         {
             // C# is setup to handle performance in this while loop scenario. And considering the legacy db is small, this is okay.
@@ -86,16 +90,10 @@ public class LegacyDataImporter
             // my thinking at the time when I was confused was to create a bool to say if they were active or not - tried to keep things simple.
             bool status = statusFlag == "A";
 
-            // // Check if DepartmentCode exists in Departments table
-            // var validDept = _cleanContext.Departments.Any(d => d.DepartmentCode == deptCode);
-            // var safeDeptCode = validDept ? deptCode : null;
+            // update the employee list reference
+            int? managerNumResult = manager ? numResult : (int?)null;
+            employeeList.Add((empNumResult, managerNumResult));
 
-            // Check if ManagerNum exists in Employees table
-            int? safeManagerNum = null;
-            if (manager && _cleanContext.Employees.Any(e => e.Id == numResult))
-            {
-                safeManagerNum = numResult;
-            }
             // the new model
             if (!_cleanContext.Employees.Any(e => e.Id == empNumResult))
             {
@@ -106,7 +104,6 @@ public class LegacyDataImporter
                     LastName = lastName,
                     DepartmentCode = deptCode,
                     Salary = salaryResult,
-                    ManagerNum = safeManagerNum,
                     PhoneNum = phoneNumber,
                     Email = emailAddress,
                     CreatedBy = createdBy,
@@ -120,6 +117,21 @@ public class LegacyDataImporter
             }
         }
         // 4. SaveChanges
+        await _cleanContext.SaveChangesAsync();
+
+        // Second pass: update ManagerNum for each employee
+        foreach (var (id, managerNum) in employeeList)
+        {
+            var employee = _cleanContext.Employees.FirstOrDefault(e => e.Id == id);
+            if (employee != null && managerNum.HasValue)
+            {
+                // Only set if manager exists
+                if (_cleanContext.Employees.Any(e => e.Id == managerNum.Value))
+                {
+                    employee.ManagerNum = managerNum.Value;
+                }
+            }
+        }
         await _cleanContext.SaveChangesAsync();
     }
 

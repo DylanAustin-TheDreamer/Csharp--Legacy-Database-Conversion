@@ -25,7 +25,9 @@ public class DepartmentController : ControllerBase
     [HttpGet("{code}")]
     public async Task<ActionResult<Departments>> GetDepartment(string code)
     {
-        var department = await _context.Departments.FindAsync(code);
+        var department = await _context.Departments
+            .Include(d => d.Manager) // or .Include(d => d.Manager) if that's your property name
+            .FirstOrDefaultAsync(d => d.DepartmentCode == code);
     
         if (department == null)
         {

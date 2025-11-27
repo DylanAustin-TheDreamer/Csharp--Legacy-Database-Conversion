@@ -25,7 +25,9 @@ public class ProjectController : ControllerBase
     [HttpGet("{code}")]
     public async Task<ActionResult<ProjectAssignTable>> GetProject(string code)
     {
-        var project = await _context.ProjectAssignments.FindAsync(code);
+        var project = await _context.ProjectAssignments
+            .Include(p => p.Employee) // or .Include(p => p.EmployeeData) if that's your property name
+            .FirstOrDefaultAsync(p => p.AssignId == code);
     
         if (project == null)
         {
