@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 
 public class LegacyDataImporter
@@ -215,14 +216,51 @@ public class LegacyDataImporter
             // do info parse and format
             int result;
             bool number = int.TryParse(employeeNum, out result);
+            // for hours
+            decimal? hrsResult;
+            decimal tempResult;
+            bool hrs = decimal.TryParse(hrsPerWeek, out tempResult);
+            if (hrs)
+            {
+                hrsResult = tempResult;
+            }
+            else
+            {
+                hrsResult = null;
+            }
+            // for bill rate
+            decimal? billResult;
+            decimal tempBill;
+            bool bill = decimal.TryParse(billRate, out tempBill);
+            if (bill)
+            {
+                billResult = tempBill;
+            }
+            else
+            {
+                billResult = null;
+            }
+
+            // for DateTimes
+            DateTime? start;
+            DateTime? end;
+            DateTime tempStart;
+            DateTime tempEnd;
+            bool stdate = DateTime.TryParse(startDate, out tempStart);
+            bool endate = DateTime.TryParse(endDate, out tempEnd);
+            start = stdate ? tempStart : null;
+            end = endate ? tempEnd : null;
 
             var projects = new ProjectAssignTable
             {
                 AssignId = assingId,
                 EmployeeNum = result,
                 ProjectCode = projectCode,
-                
-                
+                StartDate = start,
+                EndDate = end,
+                HrsPerWeek = hrsResult,
+                BillRate = billResult,
+                Notes = notes
             };
             _cleanContext.ProjectAssignments.Add(projects); 
         }
