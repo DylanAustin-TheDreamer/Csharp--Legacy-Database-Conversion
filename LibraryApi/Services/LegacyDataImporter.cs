@@ -156,7 +156,8 @@ public class LegacyDataImporter
     
             // parsing to integers and decimals
             // Parse salary string before conversion
-            salaryStr = salaryStr?.Replace("$", "").Replace(",", "");
+            var salarySplit = salaryStr?.Split(".");
+            salaryStr = salarySplit?[0].Replace("$", "").Replace(",", "");
             decimal? salaryResult = null;
             decimal tempResult = 0;
             var salary = decimal.TryParse(salaryStr, out tempResult);
@@ -248,6 +249,9 @@ public class LegacyDataImporter
             var managerNum = int.TryParse(departmentManager, out tempManagerNum);
             numResult = managerNum ? tempManagerNum : null;
 
+            var budgetSplit = budgetAmount?.Split(".");
+            budgetAmount = budgetSplit?[0].Replace("$", "").Replace(",", "");
+
             // budget amount - set as non-nullable
             decimal? amountResult;
             decimal tempAmountResult;
@@ -316,6 +320,9 @@ public class LegacyDataImporter
             decimal tempResult;
             bool hrs = decimal.TryParse(hrsPerWeek, out tempResult);
             hrsResult = hrs ? tempResult : null;
+            // parse characters etc on bill rate
+            var billSplit = billRate?.Split(new char[] { '.', '/' });
+            billRate = billSplit?[0].Replace("$", "").Replace(",", "");
             // for bill rate
             decimal? billResult;
             decimal tempBill;
