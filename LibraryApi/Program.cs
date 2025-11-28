@@ -26,6 +26,9 @@ using (var scope = app.Services.CreateScope())
 {
     var cleanContext = scope.ServiceProvider.GetRequiredService<NewDbContext>();
 
+    // Ensure database and tables are created
+    cleanContext.Database.Migrate();
+
     // Break circular dependencies before deleting
     foreach (var emp in cleanContext.Employees)
     {
