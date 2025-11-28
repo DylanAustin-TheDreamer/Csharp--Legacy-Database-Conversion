@@ -223,7 +223,7 @@ public class LegacyDataImporter
     private async Task ImportDepartmentsBasic()
     {
         // create the connection to legacy
-        var connectionString = "Data Source=../LegacyDatabase/legacy.db";
+        var connectionString = $"Data Source={Path.Combine(Directory.GetCurrentDirectory(), "legacy.db")}";
         using var connection = new SqliteConnection(connectionString);
         connection.Open();
         // use SQL to get the department information from legacy
