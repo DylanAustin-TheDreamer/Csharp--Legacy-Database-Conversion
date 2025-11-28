@@ -1,5 +1,5 @@
 // Change the API base URL if needed
-const API_BASE = "http://localhost:5200/api";
+const API_BASE = "https://library-api.up.railway.app/api";
 
 async function fetchDepartments() {
     const res = await fetch(`${API_BASE}/Department`);
