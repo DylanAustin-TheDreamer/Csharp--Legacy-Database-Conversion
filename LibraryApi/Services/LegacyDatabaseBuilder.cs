@@ -5,9 +5,9 @@ public class LegacyDatabaseBuilder
 {
     public static void CreateLegacyDatabase()
     {
-        var dbPath = Path.Combine("..", "LegacyDatabase", "legacy.db");
-        var schemaPath = Path.Combine("..", "LegacyDatabase", "legacy_schema.sql");
-        var dataPath = Path.Combine("..", "LegacyDatabase", "legacy_sample_data.sql");
+        var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "legacy.db");
+        var schemaPath = Path.Combine(Directory.GetCurrentDirectory(), "legacy_schema.sql");
+        var dataPath = Path.Combine(Directory.GetCurrentDirectory(), "legacy_sample_data.sql");
 
         // Delete existing DB if it exists
         if (File.Exists(dbPath))

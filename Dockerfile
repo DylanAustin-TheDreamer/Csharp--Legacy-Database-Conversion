@@ -9,4 +9,6 @@ RUN dotnet publish LibraryApi/LibraryApi.csproj -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY LegacyDatabase/legacy_schema.sql ./
+COPY LegacyDatabase/legacy_sample_data.sql ./
 ENTRYPOINT ["dotnet", "LibraryApi.dll"]

@@ -4,7 +4,7 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<NewDbContext>(options =>
-    options.UseSqlite("Data Source=LegacyModernized.db"));
+    options.UseSqlite($"Data Source={Path.Combine(Directory.GetCurrentDirectory(), "LegacyModernized.db")}"));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
