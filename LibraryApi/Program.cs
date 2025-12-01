@@ -23,8 +23,9 @@ catch (Exception ex)
     Console.WriteLine($"Write test failed: {ex.Message}");
 }
 
+var pgConn = Environment.GetEnvironmentVariable("DATABASE_URL") ?? "Host=localhost;Database=yourdb;Username=youruser;Password=yourpassword";
 builder.Services.AddDbContext<NewDbContext>(options =>
-    options.UseSqlite($"Data Source={Path.Combine(Directory.GetCurrentDirectory(), "LegacyModernized.db")}"));
+    options.UseNpgsql(pgConn));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
