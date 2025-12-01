@@ -2,6 +2,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+// Diagnostic: Log working directory and file status for Docker troubleshooting
+var cwd = Directory.GetCurrentDirectory();
+Console.WriteLine($"Working directory: {cwd}");
+string[] filesToCheck = { "legacy_schema.sql", "legacy_sample_data.sql" };
+foreach (var file in filesToCheck)
+{
+    var path = Path.Combine(cwd, file);
+    Console.WriteLine($"File '{file}' exists: {File.Exists(path)}");
+}
+try
+{
+    var testFile = Path.Combine(cwd, "write_test.txt");
+    File.WriteAllText(testFile, "test");
+    Console.WriteLine($"Write test succeeded: {testFile}");
+    File.Delete(testFile);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Write test failed: {ex.Message}");
+}
 
 builder.Services.AddDbContext<NewDbContext>(options =>
     options.UseSqlite($"Data Source={Path.Combine(Directory.GetCurrentDirectory(), "LegacyModernized.db")}"));
